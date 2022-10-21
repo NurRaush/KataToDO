@@ -1,0 +1,74 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "ignorePatterns": ["node_modules", "dist", "build"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:react/jsx-runtime",
+        "plugin:react-hooks/recommended",
+        "plugin:jsx-a11y/recommended",
+        "plugin:import/recommended",
+        "prettier",
+        "airbnb"
+    ],
+    "overrides": [
+    ],
+    "plugins": [
+        "react","prettier", "import"
+    ],
+    "rules": {
+        "indent": ["error", 2],
+        "react/jsx-one-expression-per-line": 0,
+        "max-length": 0,
+        "max-len": 0,
+        "react/no-unused-prop-types": [0],
+        "no-param-reassign":"off",
+        "object-curly-newline":"off",
+        "jsx-a11y/label-has-associated-control": [ 0],
+        "jsx-a11y/control-has-associated-label": [0],
+        "no-plusplus":"off",
+        "jsx-a11y/no-noninteractive-element-interactions": [0],
+        "prettier/prettier": "error",
+        "no-restricted-syntax":"off",
+        "linebreak-style": [0, "unix"],
+        "quotes": ["error", "single"],
+        "semi": "off",
+        "react/react-in-jsx-scope": "off",
+        "react/prop-types": 0,
+        "import/no-unresolved": [2, { "caseSensitive": false }],
+        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+        "react/forbid-prop-types": [0],
+        "import/order": [
+        2,
+        {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index"
+        ],
+        "newlines-between": "always"
+      }
+    ]
+    },
+    "settings": {
+        "import/resolver": {
+          "node": {
+            "extensions": [".js", ".jsx", ".ts", ".tsx"],
+            "moduleDirectory": ["node_modules", "src/"]
+          }
+        }
+      },
+    "parser": "@babel/eslint-parser",
+    "parserOptions": {
+    "requireConfigFile": false,
+    "babelOptions": {
+        "presets": ["@babel/preset-react"]
+     }
+    }
+    }
