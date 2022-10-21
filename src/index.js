@@ -45,6 +45,19 @@ class App extends React.Component {
     });
   };
 
+  editTask = (id, text) => {
+    this.setState(({ tasks }) => {
+      const idx = tasks.findIndex((el) => el.id === id);
+      const editedTask = {
+        ...tasks[idx],
+        description: text,
+      };
+      return {
+        tasks: [...tasks.slice(0, idx), editedTask, ...tasks.slice(idx + 1)],
+      };
+    });
+  };
+
   onToggleDone = (id) => {
     this.setState(({ tasks }) => {
       const idx = tasks.findIndex((el) => el.id === id);
@@ -97,7 +110,6 @@ class App extends React.Component {
   render() {
     const { tasks } = this.state;
     const uncompletedCount = tasks.filter((el) => !el.done).length;
-
     return (
       <section className="todoapp">
         <header className="header">
@@ -105,7 +117,12 @@ class App extends React.Component {
           <NewTaskForm createNewTask={this.createNewTask} />
         </header>
         <section className="main">
-          <TaskList tasks={tasks} taskDelete={this.deleteTask} onToggleDone={this.onToggleDone} />
+          <TaskList
+            tasks={tasks}
+            taskDelete={this.deleteTask}
+            onToggleDone={this.onToggleDone}
+            taskEdit={this.editTask}
+          />
           <Footer filterTasks={this.filterTasks} uncompletedCount={uncompletedCount} clearTasks={this.clearTasks} />
         </section>
       </section>
