@@ -33,7 +33,7 @@ class Task extends React.Component {
 
   render() {
     const { tasks } = this.props;
-    const { description, done, hide, createdDate } = tasks;
+    const { description, done, createdDate } = tasks;
     const { taskDeleted, onToggleDone } = this.props;
     const date = formatDistanceToNow(createdDate);
     const { label, isEditing } = this.state;
@@ -43,13 +43,10 @@ class Task extends React.Component {
     } else if (isEditing) {
       className = 'editing';
     }
-    if (hide) {
-      className += ' hide';
-    }
     return (
       <li className={className}>
         <div className="view">
-          <input name="checkbox" className="toggle" type="checkbox" onClick={onToggleDone} />
+          <input name="checkbox" defaultChecked={done} className="toggle" type="checkbox" onClick={onToggleDone} />
           {!isEditing && (
             <label>
               <span className="description">{description}</span>
@@ -78,7 +75,7 @@ class Task extends React.Component {
 }
 
 Task.defaultProps = {
-  tasks: { description: 'noDescription', done: false, hide: false },
+  tasks: { description: 'noDescription', done: false },
   taskDeleted: () => {},
   onToggleDone: () => {},
 };

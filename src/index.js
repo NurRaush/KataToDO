@@ -11,30 +11,10 @@ class App extends React.Component {
     super();
     this.state = {
       tasks: [],
+      filter: 'All',
     };
     this.id = 1;
   }
-
-  resetHidden = () => {
-    this.setState(({ tasks }) => {
-      const resetedTasks = tasks.map((el) => ({
-        ...el,
-        hide: false,
-      }));
-      return {
-        tasks: [...resetedTasks],
-      };
-    });
-  };
-
-  filterTasks = (text) => {
-    this.resetHidden();
-    if (text === 'Completed') {
-      this.hideTasks(true);
-    } else if (text === 'Active') {
-      this.hideTasks(false);
-    }
-  };
 
   deleteTask = (id) => {
     this.setState(({ tasks }) => {
@@ -75,7 +55,6 @@ class App extends React.Component {
         {
           description: text,
           done: false,
-          hide: false,
           id: this.id++,
           createdDate: Date.now(),
         },
@@ -92,24 +71,19 @@ class App extends React.Component {
     });
   };
 
-  hideTasks(done) {
-    this.setState(({ tasks }) => {
-      const copyTasks = tasks.map((el) => {
-        const copyEl = { ...el };
-        if (copyEl.done === !done) {
-          copyEl.hide = true;
-        }
-        return copyEl;
-      });
-      return {
-        tasks: [...copyTasks],
-      };
-    });
-  }
+  filterTasks = (filterName) => {
+    this.setState({ filter: filterName });
+  };
 
   render() {
-    const { tasks } = this.state;
+    const { tasks, filter } = this.state;
     const uncompletedCount = tasks.filter((el) => !el.done).length;
+    let filteredTasks = tasks;
+    if (filter === 'Completed') {
+      filteredTasks = tasks.filter((el) => el.done);
+    } else if (filter === 'Active') {
+      filteredTasks = tasks.filter((el) => !el.done);
+    }
     return (
       <section className="todoapp">
         <header className="header">
@@ -118,7 +92,7 @@ class App extends React.Component {
         </header>
         <section className="main">
           <TaskList
-            tasks={tasks}
+            tasks={filteredTasks}
             taskDelete={this.deleteTask}
             onToggleDone={this.onToggleDone}
             taskEdit={this.editTask}
