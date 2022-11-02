@@ -48,7 +48,21 @@ class App extends React.Component {
     });
   };
 
-  createNewTask = (text) => {
+  onTimer = (id, timerId) => {
+    this.setState(({ tasks }) => {
+      const idx = tasks.findIndex((el) => el.id === id);
+      const { isTimerSet } = tasks[idx];
+      let { timestamp } = tasks[idx];
+      timestamp = isTimerSet ? timestamp - 1000 : timestamp + 1000;
+      const updatedItem = { ...tasks[idx], timestamp, timerId };
+      return {
+        tasks: [...tasks.slice(0, idx), updatedItem, ...tasks.slice(idx + 1)],
+      };
+    });
+  };
+
+  createNewTask = (text, min, sec) => {
+    const timestamp = (min * 60 + Number(sec)) * 1000;
     this.setState(({ tasks }) => ({
       tasks: [
         ...tasks.slice(0),
@@ -57,6 +71,9 @@ class App extends React.Component {
           done: false,
           id: this.id++,
           createdDate: Date.now(),
+          timestamp,
+          isTimerSet: timestamp > 0,
+          timerId: null,
         },
       ],
     }));
@@ -96,6 +113,7 @@ class App extends React.Component {
             taskDelete={this.deleteTask}
             onToggleDone={this.onToggleDone}
             taskEdit={this.editTask}
+            onTimer={this.onTimer}
           />
           <Footer filterTasks={this.filterTasks} uncompletedCount={uncompletedCount} clearTasks={this.clearTasks} />
         </section>
