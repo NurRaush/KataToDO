@@ -1,125 +1,107 @@
 import './index.css';
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import NewTaskForm from './components/new-task-form';
 import TaskList from './components/task-list';
 import Footer from './components/footer';
 
-class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      tasks: [],
-      filter: 'All',
-    };
-    this.id = 1;
+function App() {
+  const [id, setId] = useState(1);
+  const [tasks, setTasks] = useState([]);
+  const [filter, setFilter] = useState('All');
+
+  const uncompletedCount = tasks.filter((el) => !el.done).length;
+  let filteredTasks = tasks;
+  if (filter === 'Completed') {
+    filteredTasks = tasks.filter((el) => el.done);
+  } else if (filter === 'Active') {
+    filteredTasks = tasks.filter((el) => !el.done);
   }
 
-  deleteTask = (id) => {
-    this.setState(({ tasks }) => {
-      const idx = tasks.findIndex((el) => el.id === id);
-      return {
-        tasks: [...tasks.slice(0, idx), ...tasks.slice(idx + 1)],
-      };
+  const deleteTask = (idD) => {
+    setTasks((tasksS) => {
+      const idx = tasksS.findIndex((el) => el.id === idD);
+      return [...tasksS.slice(0, idx), ...tasksS.slice(idx + 1)];
     });
   };
 
-  editTask = (id, text) => {
-    this.setState(({ tasks }) => {
-      const idx = tasks.findIndex((el) => el.id === id);
+  const editTask = (idD, text) => {
+    setTasks((tasksS) => {
+      const idx = tasksS.findIndex((el) => el.id === idD);
       const editedTask = {
-        ...tasks[idx],
+        ...tasksS[idx],
         description: text,
       };
-      return {
-        tasks: [...tasks.slice(0, idx), editedTask, ...tasks.slice(idx + 1)],
-      };
+      return [...tasksS.slice(0, idx), editedTask, ...tasksS.slice(idx + 1)];
     });
   };
 
-  onToggleDone = (id) => {
-    this.setState(({ tasks }) => {
-      const idx = tasks.findIndex((el) => el.id === id);
-      const updatedItem = { ...tasks[idx], done: !tasks[idx].done };
-      return {
-        tasks: [...tasks.slice(0, idx), updatedItem, ...tasks.slice(idx + 1)],
-      };
+  const onToggleDone = (idD) => {
+    setTasks((tasksS) => {
+      const idx = tasksS.findIndex((el) => el.id === idD);
+      const updatedItem = { ...tasksS[idx], done: !tasksS[idx].done };
+      return [...tasksS.slice(0, idx), updatedItem, ...tasksS.slice(idx + 1)];
     });
   };
 
-  onTimer = (id, timerId) => {
-    this.setState(({ tasks }) => {
-      const idx = tasks.findIndex((el) => el.id === id);
-      const { isTimerSet } = tasks[idx];
-      let { timestamp } = tasks[idx];
+  const onTimer = (idD, timerId) => {
+    setTasks((tasksS) => {
+      const idx = tasksS.findIndex((el) => el.id === idD);
+      const { isTimerSet } = tasksS[idx];
+      let { timestamp } = tasksS[idx];
       timestamp = isTimerSet ? timestamp - 1000 : timestamp + 1000;
-      const updatedItem = { ...tasks[idx], timestamp, timerId };
-      return {
-        tasks: [...tasks.slice(0, idx), updatedItem, ...tasks.slice(idx + 1)],
-      };
+      const updatedItem = { ...tasksS[idx], timestamp, timerId };
+      return [...tasksS.slice(0, idx), updatedItem, ...tasksS.slice(idx + 1)];
     });
   };
 
-  createNewTask = (text, min, sec) => {
+  const createNewTask = (text, min, sec) => {
     const timestamp = (min * 60 + Number(sec)) * 1000;
-    this.setState(({ tasks }) => ({
-      tasks: [
-        ...tasks.slice(0),
-        {
-          description: text,
-          done: false,
-          id: this.id++,
-          createdDate: Date.now(),
-          timestamp,
-          isTimerSet: timestamp > 0,
-          timerId: null,
-        },
-      ],
-    }));
+    setId((el) => el + 1);
+    setTasks((tasksS) => [
+      ...tasksS.slice(0),
+      {
+        description: text,
+        done: false,
+        id,
+        createdDate: Date.now(),
+        timestamp,
+        isTimerSet: timestamp > 0,
+        timerId: null,
+      },
+    ]);
   };
 
-  clearTasks = () => {
-    this.setState(({ tasks }) => {
-      const copyTasks = tasks.filter((el) => !el.done);
-      return {
-        tasks: [...copyTasks],
-      };
+  const clearTasks = () => {
+    setTasks((tasksS) => {
+      const copyTasks = tasksS.filter((el) => !el.done);
+      return [...copyTasks];
     });
   };
 
-  filterTasks = (filterName) => {
-    this.setState({ filter: filterName });
+  const filterTasks = (filterName) => {
+    setFilter(filterName);
   };
 
-  render() {
-    const { tasks, filter } = this.state;
-    const uncompletedCount = tasks.filter((el) => !el.done).length;
-    let filteredTasks = tasks;
-    if (filter === 'Completed') {
-      filteredTasks = tasks.filter((el) => el.done);
-    } else if (filter === 'Active') {
-      filteredTasks = tasks.filter((el) => !el.done);
-    }
-    return (
-      <section className="todoapp">
-        <header className="header">
-          <h1>todos</h1>
-          <NewTaskForm createNewTask={this.createNewTask} />
-        </header>
-        <section className="main">
-          <TaskList
-            tasks={filteredTasks}
-            taskDelete={this.deleteTask}
-            onToggleDone={this.onToggleDone}
-            taskEdit={this.editTask}
-            onTimer={this.onTimer}
-          />
-          <Footer filterTasks={this.filterTasks} uncompletedCount={uncompletedCount} clearTasks={this.clearTasks} />
-        </section>
+  return (
+    <section className="todoapp">
+      <header className="header">
+        <h1>todos</h1>
+        <NewTaskForm createNewTask={createNewTask} />
+      </header>
+      <section className="main">
+        <TaskList
+          tasks={filteredTasks}
+          taskDelete={deleteTask}
+          onToggleDone={onToggleDone}
+          taskEdit={editTask}
+          onTimer={onTimer}
+        />
+        <Footer filterTasks={filterTasks} uncompletedCount={uncompletedCount} clearTasks={clearTasks} />
       </section>
-    );
-  }
+    </section>
+  );
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
